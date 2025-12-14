@@ -8,7 +8,8 @@ export default function ProfilePage() {
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
-    await signOut({ redirectUrl: '/sign-in' });
+    await signOut();
+    window.location.href = '/sign-in';
   };
 
   return (

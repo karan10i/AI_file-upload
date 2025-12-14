@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
-import { useUser } from '@clerk/clerk-react';
+import { useUser, useClerk } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Header() {
   const { user } = useUser();
+  const { signOut } = useClerk();
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
+
+  const handleSignOut = async () => {
+    await signOut();
+    window.location.href = '/sign-in';
+  };
 
   return (
     <header className="header">
@@ -37,7 +43,7 @@ export default function Header() {
                 <button onClick={() => navigate('/profile')}>Profile</button>
                 <button onClick={() => navigate('/settings')}>Settings</button>
                 <hr />
-                <button className="logout-btn">Sign Out</button>
+                <button className="logout-btn" onClick={handleSignOut}>Sign Out</button>
               </div>
             )}
           </div>
