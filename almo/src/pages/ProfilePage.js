@@ -1,15 +1,13 @@
 import React from 'react';
-import { useUser, useClerk } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function ProfilePage() {
-  const { user } = useUser();
-  const { signOut } = useClerk();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleSignOut = async () => {
-    await signOut();
-    window.location.href = '/sign-in';
+  const handleSignOut = () => {
+    logout();
   };
 
   return (
@@ -21,27 +19,31 @@ export default function ProfilePage() {
 
       <div className="profile-card">
         <div className="profile-avatar">
-          {user?.profileImageUrl ? (
-            <img src={user.profileImageUrl} alt="Profile" />
-          ) : (
-            <div className="avatar-placeholder">
-              {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
-            </div>
-          )}
+          <div className="avatar-placeholder">
+            {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
+          </div>
         </div>
 
         <div className="profile-info">
           <div className="info-row">
             <label>First Name</label>
-            <p>{user?.firstName || 'Not set'}</p>
+            <p>{user?.first_name || 'Not set'}</p>
           </div>
           <div className="info-row">
             <label>Last Name</label>
-            <p>{user?.lastName || 'Not set'}</p>
+            <p>{user?.last_name || 'Not set'}</p>
           </div>
           <div className="info-row">
             <label>Email</label>
-            <p>{user?.primaryEmailAddress?.emailAddress}</p>
+            <p>{user?.email}</p>
+          </div>
+          <div className="info-row">
+            <label>Username</label>
+            <p>{user?.username}</p>
+          </div>
+          <div className="info-row">
+            <label>Workspace</label>
+            <p>{user?.workspace_name || 'Default Workspace'}</p>
           </div>
           <div className="info-row">
             <label>User ID</label>

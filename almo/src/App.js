@@ -1,13 +1,20 @@
 import React from 'react';
-import { ClerkProvider, SignedIn, useAuth } from '@clerk/clerk-react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import DashboardLayout from './pages/DashboardLayout';
 import ProfilePage from './pages/ProfilePage';
 import './App.css';
 
-const clerkPublishableKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
+// Protected Route Component
+function ProtectedRoute({ children }) {
+  const { isSignedIn, isLoaded } = useAuth();
+
+  if (!isLoaded) return <div className="loading">Loading...</div>;
+
+  return isSignedIn ? children : <Navigate to="/sign-in" replace />;
+}
 
 function AppRoutes() {
   const { isSignedIn, isLoaded } = useAuth();
@@ -21,17 +28,17 @@ function AppRoutes() {
       <Route
         path="/dashboard/*"
         element={
-          <SignedIn>
+          <ProtectedRoute>
             <DashboardLayout />
-          </SignedIn>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/profile"
         element={
-          <SignedIn>
+          <ProtectedRoute>
             <ProfilePage />
-          </SignedIn>
+          </ProtectedRoute>
         }
       />
       <Route path="/" element={isSignedIn ? <Navigate to="/dashboard" /> : <Navigate to="/sign-in" />} />
@@ -40,16 +47,12 @@ function AppRoutes() {
 }
 
 function App() {
-  if (!clerkPublishableKey) {
-    throw new Error('REACT_APP_CLERK_PUBLISHABLE_KEY is missing');
-  }
-
   return (
-    <ClerkProvider publishableKey={clerkPublishableKey}>
+    <AuthProvider>
       <BrowserRouter>
         <AppRoutes />
       </BrowserRouter>
-    </ClerkProvider>
+    </AuthProvider>
   );
 }
 
