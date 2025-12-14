@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
-import { useUser, useClerk } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Header() {
-  const { user } = useUser();
-  const { signOut } = useClerk();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
 
-  const handleSignOut = async () => {
-    await signOut();
-    window.location.href = '/sign-in';
+  const handleSignOut = () => {
+    logout();
   };
 
   return (
@@ -24,20 +22,17 @@ export default function Header() {
             <button
               className="profile-btn"
               onClick={() => setShowMenu(!showMenu)}
-              title={user?.fullName}
+              title={user?.first_name + ' ' + user?.last_name}
             >
-              {user?.profileImageUrl ? (
-                <img src={user.profileImageUrl} alt="Profile" />
-              ) : (
-                <div className="avatar-mini">
-                  {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
-                </div>
-              )}
+              <div className="avatar-mini">
+                {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
+              </div>
             </button>
             {showMenu && (
               <div className="profile-dropdown">
                 <div className="dropdown-header">
-                  <strong>{user?.fullName}</strong>
+                  <strong>{user?.first_name} {user?.last_name}</strong>
+                  <small>{user?.email}</small>
                 </div>
                 <hr />
                 <button onClick={() => navigate('/profile')}>Profile</button>
