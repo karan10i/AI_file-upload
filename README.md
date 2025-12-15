@@ -35,14 +35,14 @@ Then open http://localhost:3000 and start chatting with your documents!
 - [Usage Guide](#-usage-guide)
 - [Contributing](#-contributing)
 
-## ✨ Features
+## Features
 
-### 🔐 Authentication System
+### Authentication System
 - Custom JWT-based authentication (access + refresh tokens)
 - User registration and login
 - Workspace isolation (multi-tenant ready)
 
-### 📄 Document Management (Knowledge Hub)
+### Document Management (Knowledge Hub)
 - **File Upload**: Support for PDF, DOCX, and TXT files (up to 50MB)
 - **Cloud Storage**: Documents stored securely in AWS S3
 - **Text Extraction**: Automatic extraction from various file formats
@@ -51,16 +51,16 @@ Then open http://localhost:3000 and start chatting with your documents!
 - **Vector Storage**: ChromaDB for efficient similarity search
 - **Async Processing**: Celery-based background processing
 
-### 🤖 AI Chat Assistant (RAG-Powered)
+### AI Chat Assistant (RAG-Powered)
 - **Groq LLM Integration**: Fast inference using Llama 3.1
 - **RAG (Retrieval-Augmented Generation)**: AI searches your documents for relevant context
 - **Tool-based Agent**: LangChain agent with multiple capabilities:
-  - 🔍 Search documents by semantic similarity
-  - ✅ Create tasks from conversations
-  - 📋 List and manage tasks
-  - 📁 List uploaded documents
+  -  Search documents by semantic similarity
+  - Create tasks from conversations
+  - List and manage tasks
+  - List uploaded documents
 
-### ✅ Task Management
+### Task Management
 - Create, update, and delete tasks
 - Priority levels (Low, Medium, High)
 - Status tracking (To Do, In Progress, Done)
@@ -68,7 +68,7 @@ Then open http://localhost:3000 and start chatting with your documents!
 - AI-created task flagging
 - Link tasks to related documents
 
-## 🏗 Architecture
+##  Architecture
 
 ```mermaid
 graph TD
@@ -143,7 +143,7 @@ The system uses a **LangChain Agent** that acts as a reasoning engine. Instead o
 3.  **Action**: The Agent extracts parameters (`title="Review contract"`, `priority="high"`) and executes the Python function.
 4.  **Response**: The function returns a success message, which the LLM formats back to the user: "I've created the task 'Review contract' with high priority."
 
-## 🛠 Tech Stack
+##  Tech Stack
 
 ### Backend
 | Technology | Purpose |
@@ -167,7 +167,7 @@ The system uses a **LangChain Agent** that acts as a reasoning engine. Instead o
 | React Router 7 | Client-side routing |
 | CSS3 | Styling |
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 aloma/
@@ -229,7 +229,7 @@ aloma/
     └── .env.example         # Environment template
 ```
 
-## 📦 Prerequisites
+## Prerequisites
 
 - **Docker** and **Docker Compose** (recommended)
 - OR for local development:
@@ -243,7 +243,7 @@ aloma/
 1. **AWS Account** with S3 bucket for file storage
 2. **Groq API Key** for AI chat (free tier available at [console.groq.com](https://console.groq.com))
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Quick Start (Recommended)
 
