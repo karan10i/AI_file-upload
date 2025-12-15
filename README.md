@@ -8,6 +8,18 @@ A full-stack AI-powered workspace application that enables users to upload docum
 ![Tech Stack](https://img.shields.io/badge/ChromaDB-Vector_Store-FF6B6B)
 ![Tech Stack](https://img.shields.io/badge/Groq-LLM-00D4AA)
 
+## 🚀 Quick Start
+
+```bash
+# Clone, configure, and run in 3 commands!
+git clone https://github.com/karan10i/AI_file-upload.git
+cd AI_file-upload
+cp backend/.env.example backend/.env  # Edit with your AWS & Groq keys
+./start.sh
+```
+
+Then open http://localhost:3000 and start chatting with your documents!
+
 ## 📋 Table of Contents
 
 - [Features](#-features)
@@ -233,7 +245,68 @@ aloma/
 
 ## 🚀 Getting Started
 
-### Option 1: Using Docker (Recommended)
+### Quick Start (Recommended)
+
+The easiest way to run the entire application:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/karan10i/AI_file-upload.git
+cd AI_file-upload
+
+# 2. Set up environment variables
+cp backend/.env.example backend/.env
+# Edit backend/.env with your credentials (see below)
+
+# 3. Start everything with one command!
+./start.sh
+```
+
+**That's it!** The script will:
+- ✅ Start all Docker services (PostgreSQL, Redis, ChromaDB, Django)
+- ✅ Run database migrations automatically
+- ✅ Install frontend dependencies (first run only)
+- ✅ Start the React frontend
+
+**Access the application:**
+| Service | URL |
+|---------|-----|
+| 🌐 Frontend | http://localhost:3000 |
+| 🔌 Backend API | http://localhost:8000 |
+| 📚 API Docs (Swagger) | http://localhost:8000/swagger/ |
+
+**Script Options:**
+```bash
+./start.sh                 # Start everything (default)
+./start.sh --backend-only  # Start only backend services
+./start.sh --frontend-only # Start only frontend (backend must be running)
+./start.sh --stop          # Stop all services
+./start.sh --help          # Show help
+```
+
+### Required Environment Variables
+
+Edit `backend/.env` with your credentials:
+
+```env
+# Required: AWS S3 for file storage
+AWS_ACCESS_KEY_ID=your-aws-access-key
+AWS_SECRET_ACCESS_KEY=your-aws-secret-key
+AWS_STORAGE_BUCKET_NAME=your-bucket-name
+AWS_S3_REGION_NAME=ap-south-1
+
+# Required: Groq API for AI chat (free at https://console.groq.com)
+GROQ_API_KEY=gsk_your_groq_api_key
+
+# Optional: Customize these if needed
+DEBUG=1
+SECRET_KEY=your-secret-key
+DB_NAME=ai_workspace
+DB_USER=postgres
+DB_PASSWORD=postgres123
+```
+
+### Option 2: Manual Setup (Docker)
 
 1. **Clone the repository**
 ```bash
@@ -271,7 +344,7 @@ npm start
 - Backend API: http://localhost:8000
 - API Docs: http://localhost:8000/swagger/
 
-### Option 2: Local Development
+### Option 3: Local Development
 
 #### Backend Setup
 
