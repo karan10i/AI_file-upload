@@ -10,14 +10,15 @@ services:
     depends_on:
       - db
       - redis
+      - chroma
+    env_file:
+      - .env
     environment:
-      - DEBUG=1
       - DB_HOST=db
       - DB_PORT=5432
-      - DB_NAME=ai_workspace
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres123
       - REDIS_URL=redis://redis:6379/0
+      - CHROMADB_HOST=chroma
+      - CHROMADB_PORT=8000
 
   db:
     image: postgres:15
@@ -46,6 +47,24 @@ services:
       - CHROMA_SERVER_HTTP_PORT=8000
     volumes:
       - chroma_data:/chroma/chroma
+
+  worker:
+    build: .
+    command: celery -A config worker --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+      - chroma
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - REDIS_URL=redis://redis:6379/0
+      - CHROMADB_HOST=chroma
+      - CHROMADB_PORT=8000
 
 volumes:
   postgres_data:

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, Workspace, Document
+from .models import User, Workspace
 
 
 @admin.register(Workspace)
@@ -25,11 +25,3 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = BaseUserAdmin.fieldsets + (
         ('Custom Fields', {'fields': ('role', 'workspace')}),
     )
-
-
-@admin.register(Document)
-class DocumentAdmin(admin.ModelAdmin):
-    list_display = ('filename', 'user', 'status', 'created_at')
-    list_filter = ('status', 'created_at')
-    search_fields = ('filename', 'user__email')
-    readonly_fields = ('id', 'created_at', 'updated_at')
