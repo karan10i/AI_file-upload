@@ -21,14 +21,14 @@ A full-stack AI-powered workspace application that enables users to upload docum
 - [Usage Guide](#-usage-guide)
 - [Contributing](#-contributing)
 
-## ✨ Features
+## Features
 
-### 🔐 Authentication System
+### Authentication System
 - Custom JWT-based authentication (access + refresh tokens)
 - User registration and login
 - Workspace isolation (multi-tenant ready)
 
-### 📄 Document Management (Knowledge Hub)
+### Document Management (Knowledge Hub)
 - **File Upload**: Support for PDF, DOCX, and TXT files (up to 50MB)
 - **Cloud Storage**: Documents stored securely in AWS S3
 - **Text Extraction**: Automatic extraction from various file formats
@@ -37,16 +37,16 @@ A full-stack AI-powered workspace application that enables users to upload docum
 - **Vector Storage**: ChromaDB for efficient similarity search
 - **Async Processing**: Celery-based background processing
 
-### 🤖 AI Chat Assistant (RAG-Powered)
+### AI Chat Assistant (RAG-Powered)
 - **Groq LLM Integration**: Fast inference using Llama 3.1
 - **RAG (Retrieval-Augmented Generation)**: AI searches your documents for relevant context
 - **Tool-based Agent**: LangChain agent with multiple capabilities:
-  - 🔍 Search documents by semantic similarity
-  - ✅ Create tasks from conversations
-  - 📋 List and manage tasks
-  - 📁 List uploaded documents
+  -  Search documents by semantic similarity
+  - Create tasks from conversations
+  - List and manage tasks
+  - List uploaded documents
 
-### ✅ Task Management
+### Task Management
 - Create, update, and delete tasks
 - Priority levels (Low, Medium, High)
 - Status tracking (To Do, In Progress, Done)
@@ -54,7 +54,7 @@ A full-stack AI-powered workspace application that enables users to upload docum
 - AI-created task flagging
 - Link tasks to related documents
 
-## 🏗 Architecture
+##  Architecture
 
 ```
 ┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
@@ -73,7 +73,7 @@ A full-stack AI-powered workspace application that enables users to upload docum
              └──────────┘ └──────────┘ └──────────┘
 ```
 
-## 🛠 Tech Stack
+##  Tech Stack
 
 ### Backend
 | Technology | Purpose |
@@ -97,7 +97,7 @@ A full-stack AI-powered workspace application that enables users to upload docum
 | React Router 7 | Client-side routing |
 | CSS3 | Styling |
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 aloma/
@@ -159,7 +159,7 @@ aloma/
     └── .env.example         # Environment template
 ```
 
-## 📦 Prerequisites
+## Prerequisites
 
 - **Docker** and **Docker Compose** (recommended)
 - OR for local development:
@@ -173,9 +173,9 @@ aloma/
 1. **AWS Account** with S3 bucket for file storage
 2. **Groq API Key** for AI chat (free tier available at [console.groq.com](https://console.groq.com))
 
-## 🚀 Getting Started
+## Getting Started
 
-### Option 1: Using Docker (Recommended)
+### Option 1: Using Docker (Recommended) [use start.sh if automation*]
 
 1. **Clone the repository**
 ```bash
