@@ -15,6 +15,11 @@ RUN apt-get update && apt-get install -y \
 
 # Copy requirements and install Python dependencies
 COPY requirements.txt /app/
+
+# Install CPU-only PyTorch first (much smaller than full PyTorch with CUDA)
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+
+# Then install the rest of the requirements
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy project

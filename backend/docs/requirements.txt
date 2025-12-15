@@ -14,8 +14,6 @@ langchain
 langchain-community
 langchain-text-splitters
 langchain-huggingface  # For local embeddings
-langchain-groq         # For Groq LLM integration
-sentence-transformers  # Required by langchain-huggingface for embeddings
 pypdf                  # For PDF extraction
 python-docx            # For DOCX extraction
 tiktoken               # For token counting
