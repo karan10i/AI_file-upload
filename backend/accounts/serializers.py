@@ -47,3 +47,20 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'email', 'username', 'first_name', 'last_name', 'role', 'workspace_name')
         read_only_fields = ('id', 'role')
+
+
+class AdminUserSerializer(serializers.ModelSerializer):
+    """
+    Extended user serializer for admin endpoints.
+    Includes additional fields like is_active, date_joined, etc.
+    """
+    workspace_name = serializers.CharField(source='workspace.name', read_only=True)
+    
+    class Meta:
+        model = User
+        fields = (
+            'id', 'email', 'username', 'first_name', 'last_name', 
+            'role', 'is_active', 'is_staff', 'is_superuser',
+            'date_joined', 'last_login', 'workspace_name'
+        )
+        read_only_fields = fields

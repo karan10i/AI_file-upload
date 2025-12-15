@@ -12,6 +12,8 @@ A full-stack AI-powered workspace application that enables users to upload docum
 
 - [Features](#-features)
 - [Architecture](#-architecture)
+- [RAG Pipeline Explained](#-rag-pipeline-explained)
+- [AI Agent & Tool Calling](#-ai-agent--tool-calling)
 - [Tech Stack](#-tech-stack)
 - [Project Structure](#-project-structure)
 - [Prerequisites](#-prerequisites)
@@ -56,22 +58,78 @@ A full-stack AI-powered workspace application that enables users to upload docum
 
 ## 🏗 Architecture
 
+```mermaid
+graph TD
+    User[User / Frontend] -->|HTTP/REST| API[Django API Gateway]
+    
+    subgraph "Backend Services"
+        API --> Auth[Auth Service]
+        API --> Docs[Document Service]
+        API --> Chat[Chat Service]
+        API --> Tasks[Task Service]
+    end
+    
+    subgraph "Data & Storage"
+        Docs -->|Upload| S3[AWS S3 Bucket]
+        Docs -->|Metadata| DB[(PostgreSQL)]
+        Tasks -->|Task Data| DB
+        Chat -->|History| DB
+    end
+    
+    subgraph "AI & Processing"
+        Docs -->|Async Task| Celery[Celery Worker]
+        Celery -->|Embed| Embed[Sentence Transformers]
+        Embed -->|Store Vectors| Chroma[(ChromaDB)]
+        
+        Chat -->|Agent| Agent[LangChain Agent]
+        Agent -->|Inference| Groq[Groq LLM]
+        Agent -->|Retrieve| Chroma
+    end
 ```
-┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
-│                 │     │                  │     │                 │
-│  React Frontend │────▶│  Django Backend  │────▶│   PostgreSQL    │
-│   (Port 3000)   │     │   (Port 8000)    │     │   (Port 5432)   │
-│                 │     │                  │     │                 │
-└─────────────────┘     └────────┬─────────┘     └─────────────────┘
-                                 │
-                    ┌────────────┼────────────┐
-                    │            │            │
-                    ▼            ▼            ▼
-             ┌──────────┐ ┌──────────┐ ┌──────────┐
-             │  Redis   │ │ ChromaDB │ │  AWS S3  │
-             │ (Celery) │ │ (Vectors)│ │ (Files)  │
-             └──────────┘ └──────────┘ └──────────┘
-```
+
+## 🧠 RAG Pipeline Explained
+
+The Retrieval-Augmented Generation (RAG) pipeline turns static documents into a queryable knowledge base.
+
+1.  **Ingestion**:
+    *   User uploads a file (PDF/DOCX/TXT).
+    *   File is saved to **AWS S3**.
+    *   A Celery background task is triggered.
+
+2.  **Processing & Chunking**:
+    *   Text is extracted using `pypdf` or `python-docx`.
+    *   **Intelligent Chunking**: We use `RecursiveCharacterTextSplitter` to split text into 1000-character chunks with 200-character overlap. This preserves semantic context better than fixed-size splitting.
+
+3.  **Embedding**:
+    *   Each chunk is passed through the `all-MiniLM-L6-v2` model (via `sentence-transformers`).
+    *   This converts text into a 384-dimensional vector representation.
+
+4.  **Storage**:
+    *   Vectors + Metadata (source document ID, page number) are stored in **ChromaDB**.
+
+5.  **Retrieval & Generation**:
+    *   When a user asks a question, the query is embedded into a vector.
+    *   ChromaDB performs a semantic similarity search to find the top 4 most relevant chunks.
+    *   These chunks are fed as "Context" to the **Groq LLM** (Llama 3) along with the user's question to generate an accurate answer.
+
+## 🤖 AI Agent & Tool Calling
+
+The system uses a **LangChain Agent** that acts as a reasoning engine. Instead of just answering text, it decides *which tool* to use based on the user's intent.
+
+### Available Tools
+
+| Tool Name | Description | Trigger Example |
+|-----------|-------------|-----------------|
+| `search_documents` | Searches the vector database for information. | "What does the policy say about remote work?" |
+| `create_task` | Creates a new task in the database. | "Remind me to email John tomorrow." |
+| `list_tasks` | Retrieves the user's active tasks. | "What do I have to do today?" |
+| `list_documents` | Lists all uploaded files. | "What files have I uploaded?" |
+
+### How It Works
+1.  **Input**: User sends "Create a high priority task to review the contract."
+2.  **Reasoning**: The LLM analyzes the prompt and recognizes the intent matches the `create_task` tool signature.
+3.  **Action**: The Agent extracts parameters (`title="Review contract"`, `priority="high"`) and executes the Python function.
+4.  **Response**: The function returns a success message, which the LLM formats back to the user: "I've created the task 'Review contract' with high priority."
 
 ## 🛠 Tech Stack
 
@@ -306,9 +364,74 @@ npm start
 | GET | `/api/chat/conversations/` | List conversations |
 | GET | `/api/chat/conversations/{id}/` | Get conversation history |
 
+### Admin Endpoints (Requires Admin/Staff privileges)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/auth/admin/users/` | List all users |
+| PATCH | `/api/auth/admin/users/{id}/block/` | Block/Unblock a user |
+| GET | `/api/auth/admin/ai-usage/` | Get AI usage statistics |
+
+#### Admin Endpoints Details
+
+**GET `/api/auth/admin/users/`**
+Returns a list of all users with admin-level details.
+
+```json
+{
+  "count": 5,
+  "users": [
+    {
+      "id": "uuid",
+      "email": "user@example.com",
+      "username": "user1",
+      "is_active": true,
+      "is_staff": false,
+      "date_joined": "2024-01-01T00:00:00Z"
+    }
+  ]
+}
+```
+
+**PATCH `/api/auth/admin/users/{id}/block/`**
+Block or unblock a user. Send `{"block": true}` to block or `{"block": false}` to unblock.
+
+```json
+{
+  "message": "User user@example.com has been blocked",
+  "user": { ... }
+}
+```
+
+**GET `/api/auth/admin/ai-usage/`**
+Returns AI usage statistics.
+
+```json
+{
+  "chat_statistics": {
+    "total_messages": 150,
+    "user_messages": 75,
+    "assistant_messages": 75,
+    "unique_users": 10
+  },
+  "task_statistics": {
+    "total_tasks": 25,
+    "ai_created_tasks": 8,
+    "user_created_tasks": 17
+  },
+  "summary": {
+    "total_ai_interactions": 75,
+    "total_ai_created_items": 8
+  }
+}
+```
+
 ### Full API Documentation
 
-Visit `/swagger/` when the backend is running for interactive API documentation.
+The backend includes auto-generated Swagger/OpenAPI documentation.
+
+- **Swagger UI**: `http://localhost:8000/swagger/`
+- **ReDoc**: `http://localhost:8000/redoc/`
 
 ## ⚙️ Environment Variables
 
@@ -368,7 +491,7 @@ GROQ_API_KEY=your-groq-api-key-here
 - Tasks can be linked to relevant documents
 - Manage priorities and due dates
 
-## 🔒 Security Notes
+## Security Notes
 
 - Never commit `.env` files to version control
 - Rotate API keys periodically
@@ -376,7 +499,7 @@ GROQ_API_KEY=your-groq-api-key-here
 - Enable HTTPS in production
 - Review AWS S3 bucket permissions
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -387,14 +510,6 @@ GROQ_API_KEY=your-groq-api-key-here
 ## 📄 License
 
 This project is licensed under the MIT License.
-
-## 🙏 Acknowledgments
-
-- [LangChain](https://langchain.com/) for the AI agent framework
-- [Groq](https://groq.com/) for fast LLM inference
-- [ChromaDB](https://www.trychroma.com/) for vector storage
-- [Sentence Transformers](https://www.sbert.net/) for embeddings
-
 ---
 
 **Built with ❤️ by [Karan Gupta](https://github.com/karan10i)**
